@@ -8,15 +8,13 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { sendDocumentSubmittedEmails } from '@/lib/emailService';
 import { Toaster } from 'sonner';
-const logoImage = '/images/transparent black Logo.png';
+import logoImage from '@/../public/images/transparent black Logo.png';
 
 interface EmployeeForm {
   employeeName: string;
   employeeEmail: string;
   employeePhone: string;
   employeeCode: string;
-  costCentre: string;
-  entity: string;
 }
 
 type StoredDocument = SubmittedDocument;
@@ -34,7 +32,6 @@ export function EmployeeSubmit() {
   const [bgvFile, setBgvFile] = useState<StoredDocument | null>(null);
   const [cifFile, setCifFile] = useState<StoredDocument | null>(null);
   const [submitted, setSubmitted] = useState(false);
-  const isSubmittingRef = React.useRef(false);
 
   if (loading) {
     return (
@@ -138,8 +135,6 @@ export function EmployeeSubmit() {
   };
 
   const onSubmit = async (data: EmployeeForm) => {
-    if (isSubmittingRef.current) return;
-    isSubmittingRef.current = true;
     try {
       const selectedChecks = bgvChecklist
         .filter(item => checkedItems.includes(item.id))
@@ -157,8 +152,6 @@ export function EmployeeSubmit() {
         employeeEmail: data.employeeEmail,
         employeePhone: data.employeePhone,
         employeeCode: data.employeeCode,
-        costCentre: data.costCentre,
-        entity: data.entity,
         status: 'WIP',
         bgvChecks: bgvChecksToStore,
         documents: documents,
@@ -205,7 +198,6 @@ export function EmployeeSubmit() {
     } catch (error) {
       console.error('Submission error:', error);
       toast.error('Failed to submit. Please try again.');
-      isSubmittingRef.current = false;
     }
   };
 
@@ -309,24 +301,6 @@ export function EmployeeSubmit() {
                   className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm font-jakarta focus:outline-none focus:ring-2 focus:ring-[#2563EB]/30 focus:border-[#2563EB]"
                 />
                 {errors.employeePhone && <p className="text-rose-500 text-xs mt-1 font-jakarta">{errors.employeePhone.message}</p>}
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-slate-600 font-jakarta mb-1.5">Cost Centre *</label>
-                <input
-                  {...register('costCentre', { required: 'Cost centre is required' })}
-                  placeholder="CC001"
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm font-jakarta focus:outline-none focus:ring-2 focus:ring-[#2563EB]/30 focus:border-[#2563EB]"
-                />
-                {errors.costCentre && <p className="text-rose-500 text-xs mt-1 font-jakarta">{errors.costCentre.message}</p>}
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-slate-600 font-jakarta mb-1.5">Entity *</label>
-                <input
-                  {...register('entity', { required: 'Entity is required' })}
-                  placeholder="Entity Name"
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm font-jakarta focus:outline-none focus:ring-2 focus:ring-[#2563EB]/30 focus:border-[#2563EB]"
-                />
-                {errors.entity && <p className="text-rose-500 text-xs mt-1 font-jakarta">{errors.entity.message}</p>}
               </div>
             </div>
           </div>

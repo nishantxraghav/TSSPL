@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 import { cn } from '@/lib/utils';
-const logoImage = '/images/transparent black Logo.png';
+import logoImage from '@/../public/images/transparent black Logo.png';
 
 const adminNavItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/admin/dashboard' },

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Building2, Users, ArrowRight, CheckCircle2 } from 'lucide-react';
-const logoImage = '/images/transparent black Logo.png';
+import logoImage from '@/../public/images/transparent black Logo.png';
 
 export function LandingPage() {
   return (

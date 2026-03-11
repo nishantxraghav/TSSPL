@@ -48,11 +48,10 @@ function StatusUpdateModal({ bgvCase, onClose }: { bgvCase: BGVCase; onClose: ()
 
     // Upload new file to Supabase Storage if one was selected
     if (reportFile) {
-      const originalName = reportFile.name;
-      const filePath = `reports/${bgvCase.id}_${originalName}`;
+      const filePath = `reports/${bgvCase.id}_${Date.now()}.pdf`;
       const { error: uploadError } = await supabaseClient.storage
         .from('reports')
-        .upload(filePath, reportFile, { upsert: true, contentType: reportFile.type });
+        .upload(filePath, reportFile, { upsert: true, contentType: 'application/pdf' });
 
       if (uploadError) {
         toast.error('Failed to upload report: ' + uploadError.message);

@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { Mail, Lock, ArrowRight } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 import { toast } from 'sonner';
-const logoImage = '/images/transparent black Logo.png';
+import logoImage from '@/../public/images/transparent black Logo.png';
 
 interface LoginForm {
   email: string;
@@ -13,11 +13,11 @@ interface LoginForm {
 
 export function AdminLogin() {
   const navigate = useNavigate();
-  const { login, adminPassword } = useApp();
+  const { login } = useApp();
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginForm>();
 
   const onSubmit = async (data: LoginForm) => {
-    if (data.email === 'info@tsspl.org' && data.password === adminPassword) {
+    if (data.email === 'info@tsspl.org' && data.password === 'Hello@123') {
       login({ role: 'admin', email: data.email, name: 'TSSPL Admin' });
       toast.success('Welcome back, Administrator!');
       navigate('/admin/dashboard');

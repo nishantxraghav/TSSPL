@@ -8,21 +8,19 @@ import { toast } from 'sonner';
 import { BGVCase } from '@/types';
 import { formatDateTime } from '@/lib/utils';
 
-const BASE_URL = 'https://sv.tsspl.org';
+const BASE_URL = 'https://b1b08bc2-3b3e-4f0e-aed5-93e7444c50b6.canvases.tempo.build';
 
 interface AddEmployeeForm {
   name: string;
   email: string;
   phone: string;
   employeeCode: string;
-  costCentre: string;
-  entity: string;
   documents: File[];
   cifFile: File | null;
   bgvChecks: string[];
 }
 
-const emptyForm: AddEmployeeForm = { name: '', email: '', phone: '', employeeCode: '', costCentre: '', entity: '', documents: [], cifFile: null, bgvChecks: [] };
+const emptyForm: AddEmployeeForm = { name: '', email: '', phone: '', employeeCode: '', documents: [], cifFile: null, bgvChecks: [] };
 
 export function ClientEmployees() {
   const { authUser, cases, addCase, bgvChecklist } = useApp();
@@ -103,8 +101,6 @@ export function ClientEmployees() {
       employeeEmail: form.email.trim(),
       employeePhone: form.phone.trim(),
       employeeCode: form.employeeCode.trim(),
-      costCentre: form.costCentre.trim(),
-      entity: form.entity.trim(),
       status: 'WIP',
       bgvChecks: bgvChecksToStore,
       uploadTimestamp: now,
@@ -354,32 +350,6 @@ export function ClientEmployees() {
                   className={`w-full px-4 py-2.5 rounded-lg border text-sm font-jakarta outline-none transition-colors ${errors.employeeCode ? 'border-rose-400 bg-rose-50' : 'border-slate-200 focus:border-[#2563EB]'}`}
                 />
                 {errors.employeeCode && <p className="text-rose-500 text-xs mt-1 font-jakarta">{errors.employeeCode}</p>}
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 font-jakarta mb-1.5">
-                  Cost Centre
-                </label>
-                <input
-                  type="text"
-                  value={form.costCentre}
-                  onChange={e => setForm(f => ({ ...f, costCentre: e.target.value }))}
-                  placeholder="e.g. CC001"
-                  className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-sm font-jakarta outline-none focus:border-[#2563EB] transition-colors"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 font-jakarta mb-1.5">
-                  Entity
-                </label>
-                <input
-                  type="text"
-                  value={form.entity}
-                  onChange={e => setForm(f => ({ ...f, entity: e.target.value }))}
-                  placeholder="e.g. Entity Name"
-                  className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-sm font-jakarta outline-none focus:border-[#2563EB] transition-colors"
-                />
               </div>
 
               {/* BGV Checklist */}

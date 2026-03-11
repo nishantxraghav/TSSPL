@@ -18,8 +18,6 @@ interface AppContextType {
   addChecklistItem: (item: BGVChecklistItem) => void;
   deleteChecklistItem: (id: string) => void;
   loading: boolean;
-  adminPassword: string;
-  updateAdminPassword: (currentPassword: string, newPassword: string) => Promise<{ success: boolean; error?: string }>;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -96,7 +94,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [cases, setCases] = useState<BGVCase[]>([]);
   const [bgvChecklist, setBgvChecklist] = useState<BGVChecklistItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [adminPassword, setAdminPassword] = useState<string>('9ijn@9ijn');
 
   // Load initial data from Supabase
   useEffect(() => {
@@ -133,14 +130,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
         if (cancelled) return;
         if (checklistError) throw checklistError;
         setBgvChecklist((checklistData || []).map(mapChecklistItem));
-
-        // Load admin password
-        const adminPwPromise = supabase.from('admin_settings').select('value').eq('key', 'admin_password').single();
-        const { data: adminPwData, error: adminPwError } = await Promise.race([adminPwPromise, timeout(10000)]) as any;
-        if (cancelled) return;
-        if (!adminPwError && adminPwData?.value) {
-          setAdminPassword(adminPwData.value);
-        }
       } catch (err) {
         console.error('Error loading data from Supabase:', err);
       } finally {
@@ -323,8 +312,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
         .select()
         .single();
       if (error) throw error;
-      // Update local state immediately (deduplicate in case realtime fires too)
-      setCases(prev => prev.some(c => c.id === data.id) ? prev : [...prev, mapCase(data)]);
+      // Update local state immediately (don't rely solely on realtime subscription)
+      setCases(prev => [...prev, mapCase(data)]);
       return { success: true };
     } catch (err: any) {
       console.error('Error adding case:', err);
@@ -395,36 +384,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const updateAdminPassword = async (currentPassword: string, newPassword: string): Promise<{ success: boolean; error?: string }> => {
-    if (currentPassword !== adminPassword) {
-      return { success: false, error: 'Current password is incorrect.' };
-    }
-    if (!newPassword || newPassword.length < 4) {
-      return { success: false, error: 'New password must be at least 4 characters.' };
-    }
-    if (!supabase) return { success: false, error: 'Database not connected' };
-    try {
-      const { error } = await supabase
-        .from('admin_settings')
-        .update({ value: newPassword, updated_at: new Date().toISOString() })
-        .eq('key', 'admin_password');
-      if (error) throw error;
-      setAdminPassword(newPassword);
-      return { success: true };
-    } catch (err: any) {
-      console.error('Error updating admin password:', err);
-      return { success: false, error: err?.message || 'Failed to update password' };
-    }
-  };
-
   const contextValue = useMemo(() => ({
     authUser, login, logout,
     companies, addCompany, updateCompany, deleteCompany,
     cases, addCase, updateCase, deleteCase,
     bgvChecklist, addChecklistItem, deleteChecklistItem,
     loading,
-    adminPassword, updateAdminPassword,
-  }), [authUser, login, logout, companies, cases, bgvChecklist, loading, adminPassword]);
+  }), [authUser, login, logout, companies, cases, bgvChecklist, loading]);
 
   return (
     <AppContext.Provider value={contextValue}>

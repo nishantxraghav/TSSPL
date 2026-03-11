@@ -13,8 +13,8 @@ interface ProfileForm {
 }
 
 export function AdminProfile() {
-  const { authUser, login, updateAdminPassword } = useApp();
-  const { register, handleSubmit, watch, reset, formState: { errors } } = useForm<ProfileForm>({
+  const { authUser, login } = useApp();
+  const { register, handleSubmit, watch, formState: { errors } } = useForm<ProfileForm>({
     defaultValues: {
       name: authUser?.name || 'TSSPL Admin',
       email: authUser?.email || 'info@tsspl.org',
@@ -23,37 +23,14 @@ export function AdminProfile() {
     }
   });
 
-  const onSubmit = async (data: ProfileForm) => {
-    // Handle password change if fields are filled
-    if (data.currentPassword || data.newPassword) {
-      if (!data.currentPassword) {
-        toast.error('Please enter your current password.');
-        return;
-      }
-      if (!data.newPassword) {
-        toast.error('Please enter a new password.');
-        return;
-      }
-      const result = await updateAdminPassword(data.currentPassword, data.newPassword);
-      if (!result.success) {
-        toast.error(result.error || 'Failed to update password.');
-        return;
-      }
+  const onSubmit = (data: ProfileForm) => {
+    if (data.currentPassword && data.currentPassword !== 'Hello@123') {
+      toast.error('Current password is incorrect.');
+      return;
     }
-
-    // Update name/email in session
     if (authUser?.role === 'admin') {
       login({ ...authUser, name: data.name, email: data.email });
     }
-    
-    // Reset password fields after successful save
-    reset({
-      name: data.name,
-      email: data.email,
-      currentPassword: '',
-      newPassword: '',
-    });
-    
     toast.success('Profile updated successfully!');
   };
 

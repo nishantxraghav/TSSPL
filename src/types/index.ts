@@ -47,8 +47,6 @@ export interface BGVCase {
   employeeEmail: string;
   employeePhone: string;
   employeeCode: string;
-  costCentre?: string;
-  entity?: string;
   status: CaseStatus;
   remarks?: string;
   reportFile?: string;
